@@ -1,10 +1,7 @@
 import argparse
-#from . import cps2
-#from cps2_file_manip.NeoGeo import NeoGeo
+import sys
+from file_manip_toolkit.CPS2Format import CPS2Format
 from file_manip_toolkit.CustomFormat import CustomFormat
-
-#works great except cps2-manip is now asking for byte size
-#FIX IT ^^^^
 
 def is_number(s):
     try:
@@ -39,7 +36,7 @@ def unfman_main():
                         more than 1 file to interleave
                         ex: FILE 2 will deinterleave FILE every 2 bytes into 2 files
                         ex: FILE1 FILE2 FILE3 4 will interleave the files every 4 bytes""")
-    parser.add_argument('numbytes', type=int,
+    parser.add_argument('numbytes', type=str,
                         help='number of bytes to (de)interleave by')
     parser.add_argument('-o', '--output', type=str,
                         help='specify where to save output, default is current working directory')
@@ -49,19 +46,28 @@ def unfman_main():
                         help='make it wordy')
 
     args = parser.parse_args()
-    #print(args)
+    print(args)
     #print(len(args.files))
 
     #Do special things wrt how saved files are named for neogeo and cps2
-    # if args.format == 'neogeo':
-    #     # formatter = NeoGeo(args.verbose)
-    #     print('ok')
-    # else:
-    formatter = CustomFormat(args.files, args.numbytes, args.output, verbose=args.verbose)
+    if is_number(args.numbytes):
+        print('No format selected')
+        formatter = CustomFormat(args.files, args.numbytes, args.output, verbose=args.verbose)
+    else:
+        if str(args.numbytes).lower() == 'cps2':
+            print('CPS2 format selected')
+            formatter = CPS2Format(args.files, None, args.output, verbose=args.verbose)
+            #This is kludgey and I hate it
+            args.files.append(0)
+        else:
+            print('Unknown file format.', str(args.numbytes), 'Exiting')
+            sys.exit(1)
 
-    #Will probably want to move this logic to the __init__ of the formatter
+    #Will probably want to move this logic to the __init__ of the formatter?
+    #this will probably run into an issue if someone has a file that is just a single number
+    #print(len(args.files))
+    #This whole bit sucks and needs to get reworked
     if len(args.files) == 2:
-        #this will probably run into an issue if someone has a file that is just a single number
         if is_number(args.files[1]):
             formatter.nsplit = int(args.files[1])
             formatter.deinterleave_file()
