@@ -1,6 +1,22 @@
 import sys
 import struct
 
+def is_number(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+
+def open_file(filepath):
+        """Error handling. Returns bytearray of data in file"""
+        try:
+            with open(filepath, 'rb') as f:
+                return bytearray(f.read())
+        except FileNotFoundError as error:
+            print('Error occured during opening of file:', error, file=sys.stderr)
+            sys.exit(1)
+
 def deinterleave(data, nbytes, nsplit):
     """Deinterleaves one bytearray into nsplit many bytearrays on a nbytes basis.
 
@@ -19,7 +35,6 @@ def deinterleave(data, nbytes, nsplit):
 
     #this could cause rounding errors?
     iterlen = int(len(data) / (nbytes * nsplit))
-    #print('iterlen is:', iterlen)
     for _ in range(iterlen):
         for i, _ in enumerate(deinterleaved):
             try:
@@ -50,30 +65,6 @@ def interleave(data, nbytes):
     iterlen = int(len(data[0]) / nbytes)
     for _ in range(iterlen):
         nexts = [next(iter_) for iter_ in iters]
-        # print('nexts is:', nexts)
         interleaved.extend([b''.join(val) for val in nexts])
-        # print('interleaved is:', interleaved)
 
     return b''.join(interleaved)
-
-def swap(data, fmt):
-    """Swaps byte order of given bytearray based on the format given.
-
-    Returns a bytearray.
-    """
-    swap_fmt = ''.join(['>', fmt])
-
-    try:
-        swap_iter = struct.iter_unpack(fmt, data)
-    except struct.error as error:
-        print('ERROR:', error, 'CLOSING', file=sys.stderr)
-        sys.exit(1)
-
-    try:
-        swapped = [struct.pack(swap_fmt, *i) for i in swap_iter]
-    except struct.error as error:
-        print('ERROR:', error, '\nswap_fmt is:', swap_fmt, 'CLOSING', file=sys.stderr)
-        sys.exit(1)
-
-    # print('swapped is:', swapped)
-    return b''.join(swapped)

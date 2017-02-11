@@ -18,6 +18,6 @@ setup(
     entry_points={
         'console_scripts': [
             'unfman=file_manip_toolkit.cli:unfman_main',
-            'eswap=file_manip_toolkit.cli:eswap_main'],
+            'eswap=file_manip_toolkit.eswap.cli:main'],
         }
     )
