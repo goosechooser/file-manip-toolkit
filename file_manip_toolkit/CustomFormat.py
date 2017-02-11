@@ -1,12 +1,12 @@
 import os
-from file_manip_toolkit.file_manip import interleave, deinterleave, swap
+from file_manip_toolkit.file_manip import interleave, deinterleave, open_file, is_number
 from file_manip_toolkit.FileFormat import FileFormat
 
 #Other possible names, GenericFormat / NoFormat ?
 class CustomFormat(FileFormat):
     def run(self):
         if len(self._filepaths) == 2:
-            if self.is_number(self._filepaths[1]):
+            if is_number(self._filepaths[1]):
                 self.nsplit = int(self._filepaths[1])
                 self.deinterleave_file()
             else:
@@ -18,7 +18,7 @@ class CustomFormat(FileFormat):
 
     def interleave_files(self):
         self.verboseprint('Opening files')
-        data = [self.open_file(fp) for fp in self._filepaths]
+        data = [open_file(fp) for fp in self._filepaths]
 
         self.verboseprint('Interleaving files every', self._numbytes, 'bytes')
         interleave_data = [interleave(data, self._numbytes)]
@@ -30,7 +30,7 @@ class CustomFormat(FileFormat):
 
     def deinterleave_file(self):
         self.verboseprint('Opening file')
-        data = self.open_file(self._filepaths[0])
+        data = open_file(self._filepaths[0])
 
         self.verboseprint('Deinterleaving file every', self._numbytes, 'bytes')
         self.verboseprint('Producing', self._nsplit, 'files')
@@ -40,18 +40,6 @@ class CustomFormat(FileFormat):
         suffixes = [str(i) for i in range(self._nsplit)]
 
         self.save(deinterleave_data, filenames, suffixes)
-
-    #Should this be in its own module
-    def eswap_file(self, fmt):
-        self.verboseprint('Opening file')
-        fdata = self.open_file(self._filepaths[0])
-
-        self.verboseprint('Swapping endianess in file every', fmt, 'bytes')
-        swapped = [swap(fdata, fmt)]
-        filename = ['.'.join([os.path.split(fname)[1] for fname in self._filepaths])]
-        suffix = ['swapped']
-
-        self.save(swapped, filename, suffix)
 
     def save(self, savedata, filenames, suffixes):
         #if no custom output, save to cwd with default name

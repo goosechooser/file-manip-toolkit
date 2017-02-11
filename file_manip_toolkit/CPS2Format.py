@@ -23,7 +23,6 @@ class CPS2Format(FileFormat):
         """Interleaves a set of 4 cps2 graphics files."""
 
         self.verboseprint('Opening files')
-        #kludgey fix due to cli implementation - self._filepaths[:-1]
         data = [self.open_file(fp) for fp in self._filepaths]
 
         self.verboseprint('Splitting files')
@@ -46,7 +45,6 @@ class CPS2Format(FileFormat):
         final = [interleave(second_interleave, 1048576)]
 
         #assemble parts for saving the file
-        #kludgey fix due to cli implementation - self._filepaths[:-1]
         filepaths = [os.path.split(fpath)[1] for fpath in self._filepaths]
         splits = [name.split('.') for name in filepaths]
         bases = [base[0] for base in splits]
@@ -78,7 +76,6 @@ class CPS2Format(FileFormat):
         deinterleaved = [interleave([final[i], final[i+4]], 2) for i in range(4)]
 
         #assemble parts for saving the file
-        #kludgey fix due to cli implementation - self._filepaths[:-1]
         filepaths = [os.path.split(f)[1] for f in self._filepaths]
         splits = filepaths[0].split('.')
         nums = splits[1:]

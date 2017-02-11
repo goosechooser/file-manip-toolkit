@@ -31,21 +31,3 @@ class FileFormat(object):
     @nsplit.setter
     def nsplit(self, value):
         self._nsplit = value
-
-    @staticmethod
-    def open_file(filepath):
-        """Error handling. Returns bytearray of data in file"""
-        try:
-            with open(filepath, 'rb') as f:
-                return bytearray(f.read())
-        except FileNotFoundError as error:
-            print('Error occured during opening of file:', error, file=sys.stderr)
-            sys.exit(1)
-
-    @staticmethod
-    def is_number(s):
-        try:
-            int(s)
-            return True
-        except ValueError:
-            return False
