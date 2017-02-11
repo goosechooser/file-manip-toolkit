@@ -20,6 +20,10 @@ class FileFormat(object):
     def deinterleave_file(self):
         pass
 
+    @abstractmethod
+    def run(self):
+        pass
+
     @property
     def nsplit(self):
         return self._nsplit
@@ -37,3 +41,11 @@ class FileFormat(object):
         except FileNotFoundError as error:
             print('Error occured during opening of file:', error, file=sys.stderr)
             sys.exit(1)
+
+    @staticmethod
+    def is_number(s):
+        try:
+            int(s)
+            return True
+        except ValueError:
+            return False

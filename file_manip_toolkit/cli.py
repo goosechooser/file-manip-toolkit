@@ -46,34 +46,20 @@ def unfman_main():
                         help='make it wordy')
 
     args = parser.parse_args()
-    print(args)
+    # print(args)
     #print(len(args.files))
 
     #Do special things wrt how saved files are named for neogeo and cps2
     if is_number(args.numbytes):
-        print('No format selected')
+        # print('No format selected')
         formatter = CustomFormat(args.files, args.numbytes, args.output, verbose=args.verbose)
+    elif str(args.numbytes).lower() == 'cps2':
+        # print('CPS2 format selected')
+        formatter = CPS2Format(args.files, None, args.output, verbose=args.verbose)
+        #This is kludgey and I hate it
+        # args.files.append(0)
     else:
-        if str(args.numbytes).lower() == 'cps2':
-            print('CPS2 format selected')
-            formatter = CPS2Format(args.files, None, args.output, verbose=args.verbose)
-            #This is kludgey and I hate it
-            args.files.append(0)
-        else:
-            print('Unknown file format.', str(args.numbytes), 'Exiting')
-            sys.exit(1)
+        print('Unknown file format.', str(args.numbytes), 'Exiting')
+        sys.exit(1)
 
-    #Will probably want to move this logic to the __init__ of the formatter?
-    #this will probably run into an issue if someone has a file that is just a single number
-    #print(len(args.files))
-    #This whole bit sucks and needs to get reworked
-    if len(args.files) == 2:
-        if is_number(args.files[1]):
-            formatter.nsplit = int(args.files[1])
-            formatter.deinterleave_file()
-        else:
-            formatter.interleave_files()
-    elif len(args.files) > 2:
-        formatter.interleave_files()
-    else:
-        print('ruh o')
+    formatter.run()

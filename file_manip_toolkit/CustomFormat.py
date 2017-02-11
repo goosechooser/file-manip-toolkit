@@ -4,6 +4,18 @@ from file_manip_toolkit.FileFormat import FileFormat
 
 #Other possible names, GenericFormat / NoFormat ?
 class CustomFormat(FileFormat):
+    def run(self):
+        if len(self._filepaths) == 2:
+            if self.is_number(self._filepaths[1]):
+                self.nsplit = int(self._filepaths[1])
+                self.deinterleave_file()
+            else:
+                self.interleave_files()
+        elif len(self._filepaths) > 2:
+            self.interleave_files()
+        else:
+            print('Something broke')
+
     def interleave_files(self):
         self.verboseprint('Opening files')
         data = [self.open_file(fp) for fp in self._filepaths]
@@ -29,6 +41,7 @@ class CustomFormat(FileFormat):
 
         self.save(deinterleave_data, filenames, suffixes)
 
+    #Should this be in its own module
     def eswap_file(self, fmt):
         self.verboseprint('Opening file')
         fdata = self.open_file(self._filepaths[0])
