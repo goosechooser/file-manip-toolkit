@@ -18,11 +18,11 @@ class CustomFormat(FileFormat):
 
     def deinterleave_file(self):
         self.verboseprint('Opening file')
-        fdata = self.open_file(self._filepaths[0])
+        data = self.open_file(self._filepaths[0])
 
         self.verboseprint('Deinterleaving file every', self._numbytes, 'bytes')
         self.verboseprint('Producing', self._nsplit, 'files')
-        deinterleave_data = deinterleave(fdata, self._numbytes, self._nsplit)
+        deinterleave_data = deinterleave(data, self._numbytes, self._nsplit)
 
         filenames = [os.path.split(self._filepaths[0])[1]] * self._nsplit
         suffixes = [str(i) for i in range(self._nsplit)]
@@ -49,9 +49,9 @@ class CustomFormat(FileFormat):
         #if custom output is a folder, save default file name to that location
         elif os.path.isdir(self._savepaths):
             head = self._savepaths
-            print('filenames is:', filenames)
+            # print('filenames is:', filenames)
             tails = ['.'.join([fname, s]) for fname, s in zip(filenames, suffixes)]
-            print('tails is:', tails)
+            # print('tails is:', tails)
             spaths = [os.path.join(head, tail) for tail in tails]
 
         #if custom output is a file, append number to the end of it
