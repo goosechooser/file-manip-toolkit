@@ -5,7 +5,9 @@ from file_manip_toolkit.eswap import eswap
 
 TESTDATA = bytearray.fromhex("0A 0B 0C 0D")
 TESTDATA2 = bytearray.fromhex("0A 0B 0C 0D 0A 0B 0C 0D")
+TESTDATA3 = bytearray.fromhex("0A 0B 0C 0D 0A 0B 0C 0D 0A 0B 0C 0D 0A 0B 0C 0D")
 TESTFILE = 'testdir\\vm3.15'
+
 def test_swap_h():
     result = eswap.swap(TESTDATA, 'h')
     assert(result) == bytearray.fromhex("0B 0A 0D 0C")
@@ -79,14 +81,8 @@ def test_format_filename_folder(tmpdir):
     assert comb_result == 'custom\\temp.swapped'
 
 def test_open_file():
-    # fn = tmpdir.mkdir('data').join('temp.bmp')
-    # image.save(str(fn))
     assert eswap.open_file(TESTFILE)
 
-# Giving a nonexistent file raises an exception but not a 'FileNotFoundError'
-# pytest won't tell me what exception is being raised
-# possibly a pytest specific issue?
-# def test_open_file_exception():
-#     # with pytest.raises(FileNotFoundError):
-#     with pytest.raises(OSError, IOError, FileNotFoundError) as exc_info:
-#         eswap.open_file('vm3.15')
+def test_open_file_exception():
+    with pytest.raises(FileNotFoundError):
+        eswap.open_file('vm3.txt')
