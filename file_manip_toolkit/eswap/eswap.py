@@ -28,13 +28,15 @@ def swap(data, fmt):
         swap_iter = struct.iter_unpack(fmt, data)
     except struct.error as error:
         print('ERROR:', error, 'CLOSING', file=sys.stderr)
-        sys.exit(1)
+        raise error
+        #sys.exit(1)
 
     try:
         swapped = [struct.pack(swap_fmt, *i) for i in swap_iter]
     except struct.error as error:
         print('ERROR:', error, '\nswap_fmt is:', swap_fmt, 'CLOSING', file=sys.stderr)
-        sys.exit(1)
+        raise error
+        #sys.exit(1)
 
     # print('swapped is:', swapped)
     return b''.join(swapped)
@@ -46,7 +48,8 @@ def open_file(filepath):
             return bytearray(f.read())
     except FileNotFoundError as error:
         print('Error occured during opening of file:', error, file=sys.stderr)
-        sys.exit(1)
+        raise error
+        #sys.exit(1)
 
 def format_filename(filename, savepath, suffix):
     #if no custom output, save to cwd with default name
@@ -65,7 +68,4 @@ def format_filename(filename, savepath, suffix):
         spath = '.'.join([savepath, suffix])
 
     return spath
-    
-
-
     
