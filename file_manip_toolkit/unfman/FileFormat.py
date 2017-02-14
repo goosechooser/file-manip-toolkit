@@ -1,10 +1,9 @@
-import sys
 from abc import ABCMeta, abstractmethod
 
 class FileFormat(object):
     __metaclass__ = ABCMeta
 
-    def __init__(self, filepaths, numbytes, savepaths, verbose=False):
+    def __init__(self, filepaths, numbytes, savepaths, verbose):
         self._verbose = verbose
         self.verboseprint = print if self._verbose else lambda *a, **k: None
         self._filepaths = filepaths

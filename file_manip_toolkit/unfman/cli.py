@@ -1,14 +1,8 @@
 import argparse
 import sys
-from file_manip_toolkit.CPS2Format import CPS2Format
-from file_manip_toolkit.CustomFormat import CustomFormat
-
-def is_number(s):
-    try:
-        int(s)
-        return True
-    except ValueError:
-        return False
+from file_manip_toolkit.helpers import is_number
+from file_manip_toolkit.unfman import CPS2Format
+from file_manip_toolkit.unfman import CustomFormat
 
 def unfman_main():
     parser = argparse.ArgumentParser(description='(de)interleave binary files.')
@@ -28,10 +22,10 @@ def unfman_main():
 
     #Do special things wrt how saved files are named for neogeo and cps2
     if is_number(args.numbytes):
-        formatter = CustomFormat(args.files, args.numbytes, args.output, verbose=args.verbose)
+        formatter = CustomFormat.new(args.files, args.numbytes, args.output, args.verbose)
 
     elif str(args.numbytes).lower() == 'cps2':
-        formatter = CPS2Format(args.files, None, args.output, verbose=args.verbose)
+        formatter = CPS2Format.new(args.files, None, args.output, args.verbose)
 
     else:
         print('Unknown file format.', str(args.numbytes), 'Exiting')

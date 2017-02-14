@@ -1,9 +1,10 @@
 import os
-from file_manip_toolkit.file_manip import interleave, deinterleave, open_file, is_number
-from file_manip_toolkit.FileFormat import FileFormat
+from file_manip_toolkit.helpers import is_number
+from file_manip_toolkit.unfman import file_manip
+from file_manip_toolkit.unfman import FileFormat
 
 #Other possible names, GenericFormat / NoFormat ?
-class CustomFormat(FileFormat):
+class CustomFormat(FileFormat.FileFormat):
     def run(self):
         if len(self._filepaths) == 2:
             if is_number(self._filepaths[1]):
@@ -18,10 +19,10 @@ class CustomFormat(FileFormat):
 
     def interleave_files(self):
         self.verboseprint('Opening files')
-        data = [open_file(fp) for fp in self._filepaths]
+        data = [file_manip.open_file(fp) for fp in self._filepaths]
 
         self.verboseprint('Interleaving files every', self._numbytes, 'bytes')
-        interleave_data = [interleave(data, self._numbytes)]
+        interleave_data = [file_manip.interleave(data, self._numbytes)]
 
         filename = ['.'.join([os.path.split(fname)[1] for fname in self._filepaths])]
         suffix = ['combined']
@@ -30,11 +31,11 @@ class CustomFormat(FileFormat):
 
     def deinterleave_file(self):
         self.verboseprint('Opening file')
-        data = open_file(self._filepaths[0])
+        data = file_manip.open_file(self._filepaths[0])
 
         self.verboseprint('Deinterleaving file every', self._numbytes, 'bytes')
         self.verboseprint('Producing', self._nsplit, 'files')
-        deinterleave_data = deinterleave(data, self._numbytes, self._nsplit)
+        deinterleave_data = file_manip.deinterleave(data, self._numbytes, self._nsplit)
 
         filenames = [os.path.split(self._filepaths[0])[1]] * self._nsplit
         suffixes = [str(i) for i in range(self._nsplit)]
@@ -63,3 +64,7 @@ class CustomFormat(FileFormat):
             with open(savepath, 'wb') as f:
                 self.verboseprint('Saving', savepath)
                 f.write(data)
+
+# Factory method
+def new(filepaths, numbytes, savepaths, verbose):
+    return CustomFormat(filepaths, numbytes, savepaths, verbose)
