@@ -17,7 +17,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'unfman=file_manip_toolkit.cli:unfman_main',
+            'unfman=file_manip_toolkit.unfman.cli:unfman_main',
             'eswap=file_manip_toolkit.eswap.cli:main'],
         }
     )
