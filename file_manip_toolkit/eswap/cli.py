@@ -1,7 +1,9 @@
+import sys
+import struct
 import argparse
 from file_manip_toolkit.eswap import eswap
 
-def main():
+def parse_args(args):
     parser = argparse.ArgumentParser(description='swaps bytes on a given basis')
     parser.add_argument('file', type=str,
                         help='input file')
@@ -15,6 +17,14 @@ def main():
                         help='specify where to save output, default is current working directory')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='make it wordy')
-    args = parser.parse_args()
 
-    eswap.eswap_main(args.file, args.format, args.output, verbose=args.verbose)
+    return parser.parse_args(args)
+
+def main():
+    args = parse_args(sys.argv[1:])
+
+    try:
+        eswap.eswap_main(args.file, args.format, args.output, verbose=args.verbose)
+    except(struct.error, FileNotFoundError):
+        sys.exit(1)
+    sys.exit(0)
