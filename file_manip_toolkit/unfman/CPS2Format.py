@@ -15,9 +15,13 @@ class CPS2Format(FileFormat.FileFormat):
 
     def run(self):
         if len(self._filepaths) == 1:
-            self.deinterleave_file()
+            final = self.deinterleave_file()
         else:
-            self.interleave_files()
+            final = self.interleave_files()
+
+        savepaths = self.format_filenames()
+
+        self.save(savepaths, final)
 
     def interleave_files(self):
         """Interleaves a set of 4 cps2 graphics files."""
@@ -44,15 +48,7 @@ class CPS2Format(FileFormat.FileFormat):
         self.verboseprint('Last pass - interleaving every 1048576 bytes')
         final = [file_manip.interleave(second_interleave, 1048576)]
 
-        #assemble parts for saving the file
-        filepaths = [os.path.split(fpath)[1] for fpath in self._filepaths]
-        splits = [name.split('.') for name in filepaths]
-        bases = [base[0] for base in splits]
-        nums = [str(num[1]) for num in splits]
-
-        fname = ['.'.join([bases[0], *nums])]
-
-        self.save(final, fname, ['combined'])
+        return final
 
     def deinterleave_file(self):
         """Deinterleaves a interleaved cps2 graphics file."""
@@ -75,15 +71,27 @@ class CPS2Format(FileFormat.FileFormat):
 
         deinterleaved = [file_manip.interleave([final[i], final[i+4]], 2) for i in range(4)]
 
-        #assemble parts for saving the file
-        filepaths = [os.path.split(f)[1] for f in self._filepaths]
-        splits = filepaths[0].split('.')
-        nums = splits[1:]
-        fnames = [splits[0]] * 4
+        return deinterleaved
 
-        self.save(deinterleaved, fnames, nums)
+    def format_filenames(self):
+        print('savepaths is:', self._savepaths)
+        if len(self._filepaths) == 1:
+            # print("deinterleavE")
+            #assemble parts for saving the file
+            filepaths = [os.path.split(fpath)[1] for fpath in self._filepaths]
+            splits = filepaths[0].split('.')
+            suffixes = splits[1:-1]
+            filenames = [splits[0]] * 4
 
-    def save(self, savedata, filenames, suffixes):
+        else:
+            # print("interleave")
+            filepaths = [os.path.split(fpath)[1] for fpath in self._filepaths]
+            splits = [name.split('.') for name in filepaths]
+            bases = [base[0] for base in splits]
+            nums = [str(num[1]) for num in splits]
+            filenames = ['.'.join([bases[0], *nums])]
+            suffixes = ['combined']
+
         #if no custom output, save to cwd with default name
         if not self._savepaths:
             fnames = [os.path.split(fname)[1] for fname in filenames]
@@ -99,10 +107,16 @@ class CPS2Format(FileFormat.FileFormat):
         else:
             spaths = ['.'.join([self._savepaths, s]) for s in suffixes]
 
-        for savepath, data in zip(spaths, savedata):
-            with open(savepath, 'wb') as f:
-                self.verboseprint('Saving', savepath)
+        # print('spaths is:', spaths)
+        return spaths
+
+    def save(self, savepaths, savedata):
+        print('Saving:', savepaths)
+        for spath, data in zip(savepaths, savedata):
+            with open(spath, 'wb') as f:
+                self.verboseprint('Saving', spath)
                 f.write(data)
 
+#can remove 'numbytes' from function header
 def new(filepaths, numbytes, savepaths, verbose):
     return CPS2Format(filepaths, numbytes, savepaths, verbose)
