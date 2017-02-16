@@ -1,7 +1,6 @@
 import os
 from file_manip_toolkit.helpers import is_number
-from file_manip_toolkit.unfman import file_manip
-from file_manip_toolkit.unfman import FileFormat
+from file_manip_toolkit.unfman import file_manip, FileFormat
 
 #Other possible names, GenericFormat / NoFormat ?
 class CustomFormat(FileFormat.FileFormat):
@@ -9,25 +8,37 @@ class CustomFormat(FileFormat.FileFormat):
         if len(self._filepaths) == 2:
             if is_number(self._filepaths[1]):
                 self.nsplit = int(self._filepaths[1])
-                self.deinterleave_file()
+
+                final = self.deinterleave_file()
+
+                filenames = [os.path.split(self._filepaths[0])[1]] * self._nsplit
+                suffixes = [str(i) for i in range(self._nsplit)]
+
             else:
-                self.interleave_files()
+                final = self.interleave_files()
+
+                filenames = ['.'.join([os.path.split(fname)[1] for fname in self._filepaths])]
+                suffixes = ['combined']
+
         elif len(self._filepaths) > 2:
-            self.interleave_files()
+            final = self.interleave_files()
+
+            filenames = ['.'.join([os.path.split(fname)[1] for fname in self._filepaths])]
+            suffixes = ['combined']
+
         else:
-            print('Something broke')
+            print('Something broke - number of filepaths:', len(self._filepaths))
+            raise Exception
+
+        self.save(final, filenames, suffixes)
 
     def interleave_files(self):
         self.verboseprint('Opening files')
         data = [file_manip.open_file(fp) for fp in self._filepaths]
 
         self.verboseprint('Interleaving files every', self._numbytes, 'bytes')
-        interleave_data = [file_manip.interleave(data, self._numbytes)]
 
-        filename = ['.'.join([os.path.split(fname)[1] for fname in self._filepaths])]
-        suffix = ['combined']
-
-        self.save(interleave_data, filename, suffix)
+        return [file_manip.interleave(data, int(self._numbytes))]
 
     def deinterleave_file(self):
         self.verboseprint('Opening file')
@@ -35,14 +46,11 @@ class CustomFormat(FileFormat.FileFormat):
 
         self.verboseprint('Deinterleaving file every', self._numbytes, 'bytes')
         self.verboseprint('Producing', self._nsplit, 'files')
-        deinterleave_data = file_manip.deinterleave(data, self._numbytes, self._nsplit)
 
-        filenames = [os.path.split(self._filepaths[0])[1]] * self._nsplit
-        suffixes = [str(i) for i in range(self._nsplit)]
-
-        self.save(deinterleave_data, filenames, suffixes)
+        return file_manip.deinterleave(data, int(self._numbytes), self._nsplit)
 
     def save(self, savedata, filenames, suffixes):
+        print('_savepaths:', self._savepaths)
         #if no custom output, save to cwd with default name
         if not self._savepaths:
             fnames = [os.path.split(fname)[1] for fname in filenames]
@@ -59,7 +67,8 @@ class CustomFormat(FileFormat.FileFormat):
         #if custom output is a file, append number to the end of it
         else:
             spaths = ['.'.join([self._savepaths, s]) for s in suffixes]
-
+        
+        print('spaths:', spaths)
         for savepath, data in zip(spaths, savedata):
             with open(savepath, 'wb') as f:
                 self.verboseprint('Saving', savepath)
