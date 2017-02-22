@@ -4,7 +4,9 @@ from file_manip_toolkit.helpers import is_number
 from file_manip_toolkit.unfman import CPS2Format
 from file_manip_toolkit.unfman import CustomFormat
 
-def unfman_main():
+#todo - can input a folder containing files??
+
+def parse_args(args):
     parser = argparse.ArgumentParser(description='(de)interleave binary files.')
     parser.add_argument('files', type=str, nargs='*',
                         help="""1 file and a number (how many files to output) to deinterleave,
@@ -18,8 +20,10 @@ def unfman_main():
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='make it wordy')
 
-    args = parser.parse_args()
+    return parser.parse_args(args)
 
+def main():
+    args = parse_args(sys.argv[1:])
     #Do special things wrt how saved files are named for neogeo and cps2
     if is_number(args.numbytes):
         formatter = CustomFormat.new(args.files, args.numbytes, args.output, args.verbose)
@@ -32,3 +36,6 @@ def unfman_main():
         sys.exit(1)
 
     formatter.run()
+    sys.exit(0)
+
+
