@@ -50,7 +50,6 @@ class CustomFormat(FileFormat.FileFormat):
         return file_manip.deinterleave(data, int(self._numbytes), self._nsplit)
 
     def save(self, savedata, filenames, suffixes):
-        print('_savepaths:', self._savepaths)
         #if no custom output, save to cwd with default name
         if not self._savepaths:
             fnames = [os.path.split(fname)[1] for fname in filenames]
@@ -67,8 +66,7 @@ class CustomFormat(FileFormat.FileFormat):
         #if custom output is a file, append number to the end of it
         else:
             spaths = ['.'.join([self._savepaths, s]) for s in suffixes]
-        
-        print('spaths:', spaths)
+
         for savepath, data in zip(spaths, savedata):
             with open(savepath, 'wb') as f:
                 self.verboseprint('Saving', savepath)

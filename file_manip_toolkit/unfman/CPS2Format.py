@@ -74,7 +74,6 @@ class CPS2Format(FileFormat.FileFormat):
         return deinterleaved
 
     def format_filenames(self):
-        print('savepaths is:', self._savepaths)
         if len(self._filepaths) == 1:
             # print("deinterleavE")
             #assemble parts for saving the file
@@ -111,7 +110,6 @@ class CPS2Format(FileFormat.FileFormat):
         return spaths
 
     def save(self, savepaths, savedata):
-        print('Saving:', savepaths)
         for spath, data in zip(savepaths, savedata):
             with open(spath, 'wb') as f:
                 self.verboseprint('Saving', spath)

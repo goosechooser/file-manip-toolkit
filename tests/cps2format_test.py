@@ -46,6 +46,7 @@ def test_format_filenames(filepaths, outputs, expected):
 # DOESNT WORK WITH empty case?'' not sure how to test
 joined_deinterleave = [''.join(['tests/testdir/', DEINTERLEAVE_FILE])]
 joined_interleave = [''.join(['tests/testdir/', name]) for name in INTERLEAVE_FILES]
+# @pytest.mark.skip
 @pytest.mark.parametrize('test_data, expected', [
     (joined_deinterleave, 4),
     (joined_interleave, 1),

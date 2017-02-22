@@ -59,7 +59,6 @@ def test_run_interleave(tmpdir, filepaths, numbytes, expected, outputs):
     tmp = tmpdir.mkdir(outputs)
     custom = CustomFormat.new(filepaths, numbytes, str(tmp), False)
     custom.run()
-    print('outputs:', str(tmp))
 
     assert len(tmpdir.join(outputs).listdir()) == 1
 
@@ -74,7 +73,6 @@ def test_run_deinterleave(tmpdir, filepaths, numbytes, expected, outputs):
     tmp = tmpdir.mkdir(outputs)
     custom = CustomFormat.new(filepaths, numbytes, str(tmp), False)
     custom.run()
-    print('outputs:', str(tmp))
 
     nfiles, goodfiles = expected
     assert len(tmpdir.join(outputs).listdir()) == nfiles
