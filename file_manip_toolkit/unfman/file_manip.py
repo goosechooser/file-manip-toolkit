@@ -1,15 +1,5 @@
 import sys
-import struct
-
-def open_file(filepath):
-    """Error handling. Returns bytearray of data in file"""
-    try:
-        with open(filepath, 'rb') as f:
-            return bytearray(f.read())
-    except FileNotFoundError as error:
-        print('Error occured during opening of file:', error, file=sys.stderr)
-        raise error
-        #sys.exit(1)
+from struct import Struct, error
 
 def deinterleave(data, nbytes, nsplit):
     """Deinterleaves one bytearray into nsplit many bytearrays on a nbytes basis.
@@ -18,15 +8,14 @@ def deinterleave(data, nbytes, nsplit):
     """
     deinterleaved = [[] for n in range(nsplit)]
 
-    deinterleave_s = struct.Struct('c' * nbytes)
+    deinterleave_s = Struct('c' * nbytes)
 
     try:
         deinterleave_iter = deinterleave_s.iter_unpack(data)
-    except struct.error as error:
+    except error as err:
         #this error can be many things, handling generically until otherwise
-        print('ERROR:', error, 'CLOSING', file=sys.stderr)
-        raise error
-        # sys.exit(1)
+        print('ERROR:', err, 'CLOSING', file=sys.stderr)
+        raise err
 
     #this could cause rounding errors?
     iterlen = int(len(data) / (nbytes * nsplit))
@@ -45,16 +34,15 @@ def interleave(data, nbytes):
 
     Returns a bytearray.
     """
-    interleave_s = struct.Struct('c' * nbytes)
+    interleave_s = Struct('c' * nbytes)
     iters = []
 
     for inter in data:
         try:
             iters.append(interleave_s.iter_unpack(inter))
-        except struct.error as error:
-            print('ERROR:', error, 'CLOSING', file=sys.stderr)
-            raise error
-            # sys.exit(1)
+        except error as err:
+            print('ERROR:', err, 'CLOSING', file=sys.stderr)
+            raise err
 
     interleaved = []
     #this could cause rounding errors?
