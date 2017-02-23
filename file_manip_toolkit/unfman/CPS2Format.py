@@ -1,6 +1,45 @@
 import os
+from struct import Struct
 from file_manip_toolkit.unfman import file_manip
 from file_manip_toolkit.unfman import FileFormat
+
+# Can cut 6-7 seconds of run time if use old cps2_manip code
+# which is acceptable since this IS the cps2 specific formatter
+# do that later when u get sleep
+
+def deinterleave(data, num_bytes):
+    """Deinterleaves a bytearray.
+
+    Returns two bytearrays.
+    """
+    evens = []
+    odds = []
+    deinterleave_s = Struct('c' * num_bytes)
+    deinterleave_iter = deinterleave_s.iter_unpack(data)
+
+    for i in deinterleave_iter:
+        evens.extend([*i])
+        odds.extend([*next(deinterleave_iter)])
+
+    print('len of evens is:', len(evens), 'len of odds is:', len(odds))
+    return b''.join(evens), b''.join(odds)
+
+def interleave(file1, file2, num_bytes):
+    """Interleaves two bytearray buffers together.
+
+    Returns a bytearray.
+    """
+    interleaved = []
+    interleave_s = Struct('c' * num_bytes)
+    file1_iter = interleave_s.iter_unpack(file1)
+    file2_iter = interleave_s.iter_unpack(file2)
+
+    for i in file1_iter:
+        file2_next = next(file2_iter)
+        interleave_temp = [*i, *file2_next]
+        interleaved.extend(interleave_temp)
+
+    return  b''.join(interleaved)
 
 class CPS2Format(FileFormat.FileFormat):
     @staticmethod
@@ -30,23 +69,39 @@ class CPS2Format(FileFormat.FileFormat):
         data = [file_manip.open_file(fp) for fp in self._filepaths]
 
         self.verboseprint('Splitting files')
-        split_data = [file_manip.deinterleave(fsplit, 2, 2) for fsplit in data]
+        split_data = [deinterleave(fsplit, 2) for fsplit in data]
         # initial split gives us something like:
         # [['13e', '13o'], ['15e', '15o'], ['17e', '17o'], ['19e', '19o']]
         # want it shaped like this:
         # [['13e', '15e'], ['17e', '19e'], ['13o', '15o'], ['17o', '19o']]
 
-        reshaped = self._reshape(split_data)
+        # reshaped = self._reshape(split_data)
 
         self.verboseprint('First pass - interleaving every 2 bytes')
-        first_interleave = [file_manip.interleave(pair, 2) for pair in reshaped]
-        reshaped = [first_interleave[i:i+2] for i in range(0, len(first_interleave), 2)]
+        interleaved = []
+        data_iter = iter(split_data)
+
+        for sdata in data_iter:
+            next_data = next(data_iter)
+            even = interleave(sdata[0], next_data[0], 2)
+            odd = interleave(sdata[1], next_data[1], 2)
+            interleaved.append((even, odd))
+        # first_interleave = [interleave(pair, 2) for pair in reshaped]
+        # reshaped = [first_interleave[i:i+2] for i in range(0, len(first_interleave), 2)]
 
         self.verboseprint('Second pass - interleaving every 64 bytes')
-        second_interleave = [file_manip.interleave(pair, 64) for pair in reshaped]
+        inter_iter = iter(interleaved)
+
+        second_interleave = []
+        for i in inter_iter:
+            next_data = next(inter_iter)
+            second_interleave.append(interleave(i[0], next_data[0], 64))
+            second_interleave.append(interleave(i[1], next_data[1], 64))
+        # second_interleave = [interleave(pair, 64) for pair in reshaped]
 
         self.verboseprint('Last pass - interleaving every 1048576 bytes')
-        final = [file_manip.interleave(second_interleave, 1048576)]
+        final = [interleave(second_interleave[0], second_interleave[1], 1048576)]
+        # final = [interleave(second_interleave, 1048576)]
 
         return final
 
@@ -57,19 +112,19 @@ class CPS2Format(FileFormat.FileFormat):
         data = file_manip.open_file(self._filepaths[0])
 
         self.verboseprint('First pass - deinterleaving every 1048576 bytes')
-        first = file_manip.deinterleave(data, 1048576, 2)
+        first = deinterleave(data, 1048576)
 
         second = []
         self.verboseprint('Second pass - deinterleaving every 64 bytes')
         for half in first:
-            second.extend(file_manip.deinterleave(half, 64, 2))
+            second.extend(deinterleave(half, 64))
 
         final = []
         self.verboseprint('Final pass - deinterleaving every 2 bytes')
         for quarter in second:
-            final.extend(file_manip.deinterleave(quarter, 2, 2))
+            final.extend(deinterleave(quarter, 2))
 
-        deinterleaved = [file_manip.interleave([final[i], final[i+4]], 2) for i in range(4)]
+        deinterleaved = [interleave(final[i], final[i+4], 2) for i in range(4)]
 
         return deinterleaved
 
