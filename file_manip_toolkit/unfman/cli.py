@@ -1,10 +1,11 @@
-import argparse
 import sys
-from file_manip_toolkit.helpers import is_number
-from file_manip_toolkit.unfman import CPS2Format
-from file_manip_toolkit.unfman import CustomFormat
+import argparse
 
-#todo - can input a folder containing files??
+from file_manip_toolkit.helpers import is_number
+from file_manip_toolkit.unfman import CPS2Format, CustomFormat
+
+# todo - can input a folder containing files??
+# linux shells will expand '*' , windows doesn't have this - implement?
 
 def parse_args(args):
     parser = argparse.ArgumentParser(description='(de)interleave binary files.')
@@ -24,12 +25,12 @@ def parse_args(args):
 
 def main():
     args = parse_args(sys.argv[1:])
-    #Do special things wrt how saved files are named for neogeo and cps2
+
     if is_number(args.numbytes):
         formatter = CustomFormat.new(args.files, args.numbytes, args.output, args.verbose)
 
     elif str(args.numbytes).lower() == 'cps2':
-        formatter = CPS2Format.new(args.files, None, args.output, args.verbose)
+        formatter = CPS2Format.new(args.files, args.output, args.verbose)
 
     else:
         print('Unknown file format.', str(args.numbytes), 'Exiting')

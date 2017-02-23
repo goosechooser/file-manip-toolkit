@@ -35,9 +35,9 @@ def outputs(request):
     ([DEINTERLEAVE_FILE], 'testdir/custom',
      (4, [''.join(['testdir/', name]) for name in CUSTOM_FILES])),
 ])
-def test_format_filenames(filepaths, outputs, expected):
-    cps2 = CPS2Format.new(filepaths, None, outputs, False)
-    results = cps2.format_filenames()
+def test_format_savepaths(filepaths, outputs, expected):
+    cps2 = CPS2Format.new(filepaths, outputs, False)
+    results = cps2.format_savepaths()
     numfiles, filenames = expected
     assert len(results) == numfiles
     assert results == filenames
@@ -54,7 +54,7 @@ joined_interleave = [''.join(['tests/testdir/', name]) for name in INTERLEAVE_FI
 def test_run(test_data, expected, outputs, tmpdir):
     fns = tmpdir.mkdir(outputs)
 
-    cps2 = CPS2Format.new(test_data, None, str(fns), False)
+    cps2 = CPS2Format.new(test_data, str(fns), False)
     cps2.run()
 
     assert len(tmpdir.join(outputs).listdir()) == expected
