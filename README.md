@@ -36,6 +36,12 @@ or
 * saving to a different directory with default file name  
 `unfman FILE1 FILE2 .. FILEN NBYTES -o testdir\ -v`
 
+## usage - (de)interleaving cps2 graphics format
+* -o and -v flags still work, not shown for brevity  
+`unfman FILE NBYTES cps2`  
+`unfman FILE1 FILE2 .. FILE4 cps2`
+
+
 ## usage - endianess swapping
 * saving to current working directory with default file name  
 `eswap FILE FMT -v`

@@ -8,7 +8,7 @@ with open('LICENSE') as f:
 
 setup(
     name='file-manip-toolkit',
-    version='1.0',
+    version='1.1',
     description='collection of tools for low level binary manipulations of files',
     long_description=readme,
     author='M B',
