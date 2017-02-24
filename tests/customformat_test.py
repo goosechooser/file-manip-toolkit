@@ -12,33 +12,14 @@ DEINTERLEAVE_FILES = [[os.path.join(TESTDIR, name)] for name in INTERLEAVE_FILES
 GOOD_INTERLEAVED_FILES = [os.path.join(TESTDIR, name) for name in ['custom_combined_2.combined', 'custom_combined_4.combined', 'custom_2_combined_2.combined']]
 GOOD_DEINTERLEAVED_FILES = [os.path.join(TESTDIR, name) for name in ['custom_2_combined_2.combined.0', 'custom_2_combined_2.combined.1']]
 
-# @pytest.fixture(params=[
-#     (INTERLEAVE_FILES),
-# ])
-# def filepaths(request):
-#     return request.param
-
-# @pytest.fixture(params=[2, 4])
-# def numbytes(request):
-#     return request.param
-
 @pytest.fixture(params=[2, 4])
 def nsplits(request):
     return request.param
-
-# @pytest.fixture(scope='session')
-# def outputs(tmpdir_factory):
-#     return [tmpdir_factory.mktemp(output) for output in ['testdir\\custom', 'custom']]
 
 OUTPUTS = ['testdir\\', 'custom']
 @pytest.fixture(params=OUTPUTS)
 def outputs(request):
     return request.param
-
-# @pytest.fixture
-# def customformat(filepaths, numbytes, outputs):
-#     fns = str(outputs)
-#     return CustomFormat.new(filepaths, numbytes, outputs, False)
 
 @pytest.mark.parametrize('filepaths, numbytes, expected', [
     (INTERLEAVE_FILES, 2, 1),
@@ -55,7 +36,6 @@ def test_interleave_files(filepaths, numbytes, expected, outputs):
     (INTERLEAVE_FILES[:2], 2, GOOD_INTERLEAVED_FILES[2]),
 ])
 def test_run_interleave(tmpdir, filepaths, numbytes, expected, outputs):
-    # print('outputs:', str(outputs))
     tmp = tmpdir.mkdir(outputs)
     custom = CustomFormat.new(filepaths, numbytes, str(tmp), False)
     custom.run()
@@ -69,7 +49,6 @@ def test_run_interleave(tmpdir, filepaths, numbytes, expected, outputs):
     ([GOOD_INTERLEAVED_FILES[2], '2'], 2, (2, GOOD_DEINTERLEAVED_FILES)),
 ])
 def test_run_deinterleave(tmpdir, filepaths, numbytes, expected, outputs):
-    # print('outputs:', str(outputs))
     tmp = tmpdir.mkdir(outputs)
     custom = CustomFormat.new(filepaths, numbytes, str(tmp), False)
     custom.run()

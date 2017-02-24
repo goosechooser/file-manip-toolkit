@@ -3,10 +3,6 @@ import sys
 import pytest
 from file_manip_toolkit.unfman import cli
 
-# class TestFormat:
-#     def __init__(self, fdir, ifiles, dfiles):
-#         self._fdir = fdir
-#         self._ifiles
 
 custom_dir = 'tests\\testdir'
 custom_ifiles = ['cps2_test.13', 'cps2_test.15', 'cps2_test.17', 'cps2_test.19']
@@ -14,6 +10,7 @@ custom_interleave = [os.path.join(custom_dir, name) for name in custom_ifiles]
 custom_dfiles = ['cps2_test.13.15.17.19.combined']
 custom_deinterleave = [[os.path.join(custom_dir, name), '4'] for name in custom_dfiles]
 cps2_deinterleave = [os.path.join(custom_dir, name) for name in custom_dfiles]
+
 @pytest.fixture(params=[*custom_deinterleave, 
                         custom_interleave, custom_interleave[:2], custom_interleave[1:]])
 def files(request):
@@ -51,6 +48,8 @@ def test_main_custom(tmpdir, files, nbytes, output, verbose):
         newoutput = output[-1]
 
     sys.argv = ['unfman', *files, nbytes, *newoutput, *verbose]
+    print(sys.argv)
+
     with pytest.raises(SystemExit) as sysexit:
         cli.main()
         assert sysexit.code == 0
