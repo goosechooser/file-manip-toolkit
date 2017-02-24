@@ -1,7 +1,6 @@
 import sys
 import argparse
 
-from file_manip_toolkit.helpers import is_number
 from file_manip_toolkit.unfman import CPS2Format, CustomFormat
 
 # todo - can input a folder containing files??
@@ -26,12 +25,10 @@ def parse_args(args):
 def main():
     args = parse_args(sys.argv[1:])
 
-    if is_number(args.numbytes):
-        formatter = CustomFormat.new(args.files, args.numbytes, args.output, args.verbose)
-
-    elif str(args.numbytes).lower() == 'cps2':
+    if str(args.numbytes).lower() == 'cps2':
         formatter = CPS2Format.new(args.files, args.output, args.verbose)
-
+    elif CustomFormat.is_number(args.numbytes):
+        formatter = CustomFormat.new(args.files, args.numbytes, args.output, args.verbose)
     else:
         print('Unknown file format.', str(args.numbytes), 'Exiting')
         sys.exit(1)

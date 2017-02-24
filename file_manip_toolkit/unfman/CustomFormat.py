@@ -1,15 +1,16 @@
 import os
 import sys
 from struct import Struct, error
-from file_manip_toolkit.helpers import is_number
-from file_manip_toolkit.unfman.FileFormat import FileFormat
+from file_manip_toolkit.unfman.FileFormat import FileFormatBase
 
-class CustomFormat(FileFormat):
+class CustomFormat(FileFormatBase):
+    def __init__(self, filepaths, numbytes, savepaths, verbose):
+        super(CustomFormat, self).__init__(filepaths, numbytes, savepaths, verbose)
+        self._nsplit = None
+
     def run(self):
         if is_number(self._filepaths[1]):
             self._nsplit = int(self._filepaths[1])
-
-        if self._nsplit:
             final = self.deinterleave_file()
 
         elif len(self._filepaths) >= 2:
@@ -22,7 +23,18 @@ class CustomFormat(FileFormat):
         savepaths = self.format_savepaths()
         self.save(savepaths, final)
 
+    @staticmethod
+    def open_file(filepath):
+        """Error handling. Returns bytearray of data in file"""
+        try:
+            with open(filepath, 'rb') as f:
+                return bytearray(f.read())
+        except FileNotFoundError as err:
+            print('Error occured during opening of file:', err, file=sys.stderr)
+            raise err
+
     def interleave_files(self):
+        """Interleaves files together. Returns a list of bytearrays."""
         self.verboseprint('Opening files')
         data = [self.open_file(fp) for fp in self._filepaths]
 
@@ -31,6 +43,7 @@ class CustomFormat(FileFormat):
         return [interleave(data, int(self._numbytes))]
 
     def deinterleave_file(self):
+        """Deinterleaves a file. Returns a a list of bytearrays."""
         self.verboseprint('Opening file')
         data = self.open_file(self._filepaths[0])
 
@@ -40,13 +53,10 @@ class CustomFormat(FileFormat):
         return deinterleave(data, int(self._numbytes), self._nsplit)
 
     def _filenames_and_suffixes(self):
+        """Produces filenames and endings."""
         if self._nsplit:
             filenames = [os.path.split(self._filepaths[0])[1]] * self._nsplit
             suffixes = [str(i) for i in range(self._nsplit)]
-
-        # elif len(self._filepaths) > 2:
-        #     filenames = ['.'.join([os.path.split(fname)[1] for fname in self._filepaths])]
-        #     suffixes = ['combined']
 
         else:
             filenames = ['.'.join([os.path.split(fname)[1] for fname in self._filepaths])]
@@ -55,6 +65,7 @@ class CustomFormat(FileFormat):
         return filenames, suffixes
 
     def format_savepaths(self):
+        """Handles where outputs are saved to. Returns a list of paths."""
         filenames, suffixes = self._filenames_and_suffixes()
         #if no custom output, save to cwd with default name
         if not self._savepaths:
@@ -72,6 +83,12 @@ class CustomFormat(FileFormat):
             spaths = ['.'.join([self._savepaths, s]) for s in suffixes]
 
         return spaths
+
+    def save(self, savepaths, savedata):
+        for spath, data in zip(savepaths, savedata):
+            with open(spath, 'wb') as f:
+                self.verboseprint('Saving', spath)
+                f.write(data)
 
 # Factory method
 def new(filepaths, numbytes, savepaths, verbose):
@@ -128,3 +145,10 @@ def interleave(data, nbytes):
         interleaved.extend([b''.join(val) for val in nexts])
 
     return b''.join(interleaved)
+
+def is_number(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False

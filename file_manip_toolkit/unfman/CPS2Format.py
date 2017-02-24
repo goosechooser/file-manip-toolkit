@@ -1,19 +1,18 @@
 import os
 from struct import Struct
-from file_manip_toolkit.unfman.FileFormat import FileFormat
+from file_manip_toolkit.unfman.CustomFormat import CustomFormat
 
 # Current times for deinterleave/interleave are ~10s each
 # Implement threading for a speedup?
 
-class CPS2Format(FileFormat):
+class CPS2Format(CustomFormat):
     def run(self):
-        savepaths = self.format_savepaths()
-
         if len(self._filepaths) == 1:
             final = self.deinterleave_file()
         else:
             final = self.interleave_files()
 
+        savepaths = self.format_savepaths()
         self.save(savepaths, final)
 
     def interleave_files(self):
@@ -90,26 +89,6 @@ class CPS2Format(FileFormat):
             suffixes = ['combined']
 
         return filenames, suffixes
-
-    def format_savepaths(self):
-        filenames, suffixes = self._filenames_and_suffixes()
-
-        #if no custom output, save to cwd with default name
-        if not self._savepaths:
-            fnames = [os.path.split(fname)[1] for fname in filenames]
-            spaths = ['.'.join([fname, s]) for fname, s in zip(fnames, suffixes)]
-
-        #if custom output is a folder, save default file name to that location
-        elif os.path.isdir(self._savepaths):
-            head = self._savepaths
-            tails = ['.'.join([fname, s]) for fname, s in zip(filenames, suffixes)]
-            spaths = [os.path.join(head, tail) for tail in tails]
-
-        #if custom output is a file, append number to the end of it
-        else:
-            spaths = ['.'.join([self._savepaths, s]) for s in suffixes]
-
-        return spaths
 
 # factory
 def new(filepaths, savepaths, verbose):
