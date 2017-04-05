@@ -1,3 +1,6 @@
+"""
+License info here?
+"""
 from abc import ABC, abstractmethod
 
 # point of metaclass is to enforce a 'contract'
@@ -5,6 +8,8 @@ from abc import ABC, abstractmethod
 # interleave_files, deinterleave_file, run
 
 class FileFormatBase(ABC):
+    """Abstract base class representing a file format.
+    """
     def __init__(self, filepaths, numbytes, savepaths, verbose):
         self._verbose = verbose
         self.verboseprint = print if self._verbose else lambda *a, **k: None
@@ -14,12 +19,21 @@ class FileFormatBase(ABC):
 
     @abstractmethod
     def interleave_files(self):
-        pass
+        """
+        This method must be overriden.
+        """
+        raise NotImplementedError
 
     @abstractmethod
     def deinterleave_file(self):
-        pass
+        """
+        This method must be overriden.
+        """
+        raise NotImplementedError
 
     @abstractmethod
     def run(self):
-        pass
+        """
+        This method must be overriden.
+        """
+        raise NotImplementedError
