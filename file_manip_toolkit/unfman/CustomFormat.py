@@ -110,15 +110,15 @@ def deinterleave(data, nbytes, nsplit):
         print('ERROR:', err, 'CLOSING', file=sys.stderr)
         raise err
 
-    #this could cause rounding errors?
-    iterlen = int(len(data) / (nbytes * nsplit))
-    for _ in range(iterlen):
-        for i, _ in enumerate(deinterleaved):
+    for di in deinterleave_iter:
+        deinterleaved[0].extend([*di])
+        for dl in deinterleaved[1:]:
             try:
                 next_ = next(deinterleave_iter)
             except StopIteration:
                 pass
-            deinterleaved[i].extend([*next_])
+            else:
+                dl.extend([*next_])
 
     return [b''.join(delist) for delist in deinterleaved]
 
@@ -134,15 +134,17 @@ def interleave(data, nbytes):
         try:
             iters.append(interleave_s.iter_unpack(inter))
         except error as err:
+            #this error can be many things, handling generically until otherwise
             print('ERROR:', err, 'CLOSING', file=sys.stderr)
             raise err
 
     interleaved = []
-    #this could cause rounding errors?
-    iterlen = int(len(data[0]) / nbytes)
-    for _ in range(iterlen):
-        nexts = [next(iter_) for iter_ in iters]
-        interleaved.extend([b''.join(val) for val in nexts])
+
+    for i in iters[0]:
+        interleaved.extend([*i])
+        nexts = [next(iter_) for iter_ in iters[1:]]
+        for val in nexts:
+            interleaved.extend([*val])
 
     return b''.join(interleaved)
 

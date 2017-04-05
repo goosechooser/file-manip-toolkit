@@ -30,8 +30,8 @@ class CPS2Format(CustomFormat):
 
         for sdata in data_iter:
             next_data = next(data_iter)
-            even = interleave(sdata[0], next_data[0], 2)
-            odd = interleave(sdata[1], next_data[1], 2)
+            even = interleave([sdata[0], next_data[0]], 2)
+            odd = interleave([sdata[1], next_data[1]], 2)
             interleaved.append((even, odd))
 
         self.verboseprint('Second pass - interleaving every 64 bytes')
@@ -40,11 +40,11 @@ class CPS2Format(CustomFormat):
         second_interleave = []
         for i in inter_iter:
             next_data = next(inter_iter)
-            second_interleave.append(interleave(i[0], next_data[0], 64))
-            second_interleave.append(interleave(i[1], next_data[1], 64))
+            second_interleave.append(interleave([i[0], next_data[0]], 64))
+            second_interleave.append(interleave([i[1], next_data[1]], 64))
 
         self.verboseprint('Last pass - interleaving every 1048576 bytes')
-        final = [interleave(second_interleave[0], second_interleave[1], 1048576)]
+        final = [interleave([second_interleave[0], second_interleave[1]], 1048576)]
 
         return final
 
@@ -67,7 +67,7 @@ class CPS2Format(CustomFormat):
         for quarter in second:
             final.extend(deinterleave(quarter, 2))
 
-        deinterleaved = [interleave(final[i], final[i+4], 2) for i in range(4)]
+        deinterleaved = [interleave([final[i], final[i+4]], 2) for i in range(4)]
 
         return deinterleaved
 
@@ -110,19 +110,19 @@ def deinterleave(data, num_bytes):
 
     return b''.join(evens), b''.join(odds)
 
-def interleave(file1, file2, num_bytes):
+def interleave(data, num_bytes):
     """Interleaves two bytearray buffers together.
 
     Returns a bytearray.
     """
     interleaved = []
     interleave_s = Struct('c' * num_bytes)
-    file1_iter = interleave_s.iter_unpack(file1)
-    file2_iter = interleave_s.iter_unpack(file2)
+    data1_iter = interleave_s.iter_unpack(data[0])
+    data2_iter = interleave_s.iter_unpack(data[1])
 
-    for i in file1_iter:
-        file2_next = next(file2_iter)
-        interleave_temp = [*i, *file2_next]
+    for i in data1_iter:
+        data2_next = next(data2_iter)
+        interleave_temp = [*i, *data2_next]
         interleaved.extend(interleave_temp)
 
     return  b''.join(interleaved)
