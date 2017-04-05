@@ -1,8 +1,22 @@
+"""
+License info here?
+"""
 import os
 import sys
 import struct
 
 def eswap_main(filepath, fmt, savepath, verbose=False):
+    """
+    A 'one-stop-shop' for using eswap.
+
+    Args:
+        filepath (str): path to the file having its endianess swapped.
+        fmt (str): how the data will be swapped. examples are 'h', 'H', 'i', 'I', 'q', 'Q'.\\
+        A combination of these formats can be used such as 'hQ' but\\
+        your mileage may vary.
+        savepath (str): path to save the endian swapped file to.
+        verbose (bool, optional): Prints out more information. Defaults to False.
+    """
     verboseprint = print if verbose else lambda *a, **k: None
     verboseprint('Opening file')
     fdata = open_file(filepath)
@@ -18,9 +32,15 @@ def eswap_main(filepath, fmt, savepath, verbose=False):
         f.write(swapped)
 
 def swap(data, fmt):
-    """Swaps byte order of given bytearray based on the format given.
+    """
+    Swaps byte order of given bytearray based on the format given.
 
-    Returns a bytearray.
+    Args:
+        data (bytearray)
+        fmt (str): the format used. examples are 'h', 'H', 'i', 'I', 'q', 'Q'.
+
+    Returns:
+        bytes
     """
     swap_fmt = ''.join(['>', fmt])
 
@@ -39,7 +59,13 @@ def swap(data, fmt):
     return b''.join(swapped)
 
 def open_file(filepath):
-    """Error handling. Returns bytearray of data in file"""
+    """
+    Opens a file and reads it.
+    Args:
+        filepath (str): path to the file.
+    Returns:
+        bytearray of file contents
+    """
     try:
         with open(filepath, 'rb') as f:
             return bytearray(f.read())
@@ -48,6 +74,17 @@ def open_file(filepath):
         raise error
 
 def format_filename(filename, savepath, suffix):
+    """
+    Creates correct filename/filepath to save.
+
+    Args:
+        filename (str): name of the file.
+        savepath (str): path to save the file to.
+        suffix (str): appended to name of file.
+
+    Returns:
+        a filepath with filename, ready to be used with 'with open()' or similar.
+    """
     #if no custom output, save to cwd with default name
     if not savepath:
         spath = '.'.join([filename, suffix])
