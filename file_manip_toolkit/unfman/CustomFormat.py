@@ -1,9 +1,16 @@
+"""
+License info here?
+"""
 import os
 import sys
 from struct import Struct, error
 from file_manip_toolkit.unfman.FileFormat import FileFormatBase
 
 class CustomFormat(FileFormatBase):
+    """This class handles the deinterleaving and interleaving of a nonspecific file format.
+
+    Methods are setup to handle 
+    """
     def __init__(self, filepaths, numbytes, savepaths, verbose):
         super(CustomFormat, self).__init__(filepaths, numbytes, savepaths, verbose)
         self._nsplit = None
@@ -123,7 +130,10 @@ def deinterleave(data, nbytes, nsplit):
     return [b''.join(delist) for delist in deinterleaved]
 
 def interleave(data, nbytes):
-    """Interleaves a list of bytearrays together on a nbytes basis.
+    """Interleaves multiple bytearrays together.
+    
+    Args:
+        data (:obj:`list` of :obj:`bytearray`):  on a nbytes basis.
 
     Returns a bytearray.
     """
@@ -147,6 +157,15 @@ def interleave(data, nbytes):
     return b''.join(interleaved)
 
 def is_number(s):
+    """
+    Determines if variable is a number or not.
+
+    Args:
+        s (unknown): variable to check.
+
+    Returns:
+        a bool. True if s is a number, False otherwise.
+    """
     try:
         int(s)
         return True

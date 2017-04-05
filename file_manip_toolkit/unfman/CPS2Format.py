@@ -1,3 +1,6 @@
+"""
+License info here?
+"""
 import os
 from struct import Struct
 from file_manip_toolkit.unfman.CustomFormat import CustomFormat
@@ -6,7 +9,17 @@ from file_manip_toolkit.unfman.CustomFormat import CustomFormat
 # Implement threading for a speedup?
 
 class CPS2Format(CustomFormat):
+    """This class handles the deinterleaving and interleaving of CPS2 files.
+
+    Its deinterleave() and interleave() are 'optimized' based on knowing exactly
+    how many files are expected, and the size of the files.
+    """
     def run(self):
+        """
+        Deinterleaves/Interleaves the group of files. Saves them.
+        The factory function should be used to set everything up,\\
+        and then this can be called.
+        """
         if len(self._filepaths) == 1:
             final = self.deinterleave_file()
         else:
@@ -16,7 +29,14 @@ class CPS2Format(CustomFormat):
         self.save(savepaths, final)
 
     def interleave_files(self):
-        """Interleaves a set of 4 cps2 graphics files."""
+        """
+        Interleaves a group of 4 CPS2 graphics files.
+
+        Returns:
+            a :obj:`list` containing a single :obj:`bytes`.\\
+            This is the final interleaved file. This can then be\\
+            saved to a file.
+        """
 
         self.verboseprint('Opening files')
         data = [self.open_file(fp) for fp in self._filepaths]
@@ -49,7 +69,12 @@ class CPS2Format(CustomFormat):
         return final
 
     def deinterleave_file(self):
-        """Deinterleaves a interleaved cps2 graphics file."""
+        """
+        Deinterleaves a single interleaved CPS2 graphics file.
+
+        Returns:
+            a :obj:`list` of :obj:`bytes`. These can then be saved to files.
+        """
 
         self.verboseprint('Opening files')
         data = self.open_file(self._filepaths[0])
@@ -92,12 +117,27 @@ class CPS2Format(CustomFormat):
 
 # factory
 def new(filepaths, savepaths, verbose):
+    """
+    A factory function.
+
+    Args:
+        filepaths (:obj:`list` of :obj:`str`): A list of the filepath(s) to be used\\
+        in (de)interleaving.
+        savepaths ()
+    """
     return CPS2Format(filepaths, None, savepaths, verbose)
 
 def deinterleave(data, num_bytes):
-    """Deinterleaves a bytearray.
+    """
+    Deinterleaves a (:obj:`bytearray`).
+    This has some CPS2 specific 'optimizations' based on how the files are grouped.
 
-    Returns two bytearrays.
+    Args:
+        data (:obj:`bytearray`): the binary data to be deinterleaved.
+        num_bytes (int): the number of bytes data is deinterleaved by.
+
+    Returns:
+        two :obj:`bytearray`
     """
     evens = []
     odds = []
@@ -111,9 +151,14 @@ def deinterleave(data, num_bytes):
     return b''.join(evens), b''.join(odds)
 
 def interleave(file1, file2, num_bytes):
-    """Interleaves two bytearray buffers together.
+    """
+    Interleaves two (:obj:`bytearray`) together.
 
-    Returns a bytearray.
+    Args:
+        COME BACK TO THIS ONCE YOU'VE REFACTORED THE HEADER.
+
+    Returns:
+        a (:obj:`bytearray`).
     """
     interleaved = []
     interleave_s = Struct('c' * num_bytes)
