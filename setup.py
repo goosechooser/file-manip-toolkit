@@ -8,7 +8,7 @@ with open('LICENSE') as f:
 
 setup(
     name='file-manip-toolkit',
-    version='1.0',
+    version='1.1',
     description='collection of tools for low level binary manipulations of files',
     long_description=readme,
     author='M B',
@@ -17,7 +17,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'unfman=file_manip_toolkit.cli:unfman_main',
-            'eswap=file_manip_toolkit.cli:eswap_main'],
+            'unfman=file_manip_toolkit.unfman.cli:main',
+            'eswap=file_manip_toolkit.eswap.cli:main'],
         }
     )
