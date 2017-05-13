@@ -88,6 +88,8 @@ class CPS2Format(CustomFormat):
             filenames = ['.'.join([bases[0], *nums])]
             suffixes = ['combined']
 
+        print('filenames:', filenames)
+        print('suffixes:', suffixes)
         return filenames, suffixes
 
 # factory
