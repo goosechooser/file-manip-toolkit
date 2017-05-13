@@ -22,7 +22,7 @@ def test_swap(test_input, fmt, expected):
 
 @pytest.mark.parametrize("fmt", [
     ('Q'),
-    ('e')
+    ('q')
 ])
 def test_swap_exception(fmt):
     with pytest.raises(struct.error):
