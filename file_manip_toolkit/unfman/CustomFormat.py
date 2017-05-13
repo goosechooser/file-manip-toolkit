@@ -9,13 +9,32 @@ from file_manip_toolkit.unfman.FileFormat import FileFormatBase
 class CustomFormat(FileFormatBase):
     """This class handles the deinterleaving and interleaving of a nonspecific file format.
 
-    Methods are setup to handle 
+    Methods are setup to handle combinations of numbers of files
+    and numbers of bytes that aren't pre-determined.
+
+    The number of files (in filepaths) determines whether to interleave the files
+    or deinterleave the file. It is assumed that multiple files wil be interleaved
+    to produce a single file, and that a single file will be deinterleaved into
+    multiple files.
+
+    Attributes:
+        filepaths (:obj:`list` of :obj:`str`): the paths to the files.
+        numbytes (int):  the number of bytes data to (de)interleave by.
+        savepaths (:obj:`list` of :obj:`str`): contains a single :obj:`str`. 
+        Can be: empty (saves in the current working directory), a path to
+        a folder (saves to the folder), a filename (will save outputs with this name),
+        or a path to a folder with a filename.
     """
     def __init__(self, filepaths, numbytes, savepaths, verbose):
         super(CustomFormat, self).__init__(filepaths, numbytes, savepaths, verbose)
         self._nsplit = None
 
     def run(self):
+        """
+        Deinterleaves/Interleaves the group of files. Saves them.
+        The factory function should be used to set everything up,\\
+        and then this can be called.
+        """
         if is_number(self._filepaths[1]):
             self._nsplit = int(self._filepaths[1])
             final = self.deinterleave_file()
@@ -72,7 +91,13 @@ class CustomFormat(FileFormatBase):
         return filenames, suffixes
 
     def format_savepaths(self):
-        """Handles where outputs are saved to. Returns a list of paths."""
+        """
+        Handles where outputs are saved to.
+        
+        Returns:
+         a :obj:`list` of :obj:`str` that can be zipped together with data to be saved.
+
+        """
         filenames, suffixes = self._filenames_and_suffixes()
         #if no custom output, save to cwd with default name
         if not self._savepaths:
@@ -99,6 +124,14 @@ class CustomFormat(FileFormatBase):
 
 # Factory method
 def new(filepaths, numbytes, savepaths, verbose):
+    """
+    A factory function.
+
+    Args:
+        filepaths (:obj:`list` of :obj:`str`): A list of the filepath(s) to be used\\
+        in (de)interleaving.
+        savepaths ()
+    """
     return CustomFormat(filepaths, numbytes, savepaths, verbose)
 
 def deinterleave(data, nbytes, nsplit):

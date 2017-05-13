@@ -155,7 +155,8 @@ def interleave(file1, file2, num_bytes):
     Interleaves two (:obj:`bytearray`) together.
 
     Args:
-        COME BACK TO THIS ONCE YOU'VE REFACTORED THE HEADER.
+        data (:obj:`list` of :obj:`bytearray`): a list containing 2 :obj:`bytearray`.
+        num_bytes (int): he number of bytes data is interleaved by.
 
     Returns:
         a (:obj:`bytearray`).
