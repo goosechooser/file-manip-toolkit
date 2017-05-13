@@ -81,7 +81,7 @@ class CustomFormat(FileFormatBase):
         #if custom output is a file, append number to the end of it
         else:
             spaths = ['.'.join([self._savepaths, s]) for s in suffixes]
-
+        print('spaths:', spaths)
         return spaths
 
     def save(self, savepaths, savedata):
