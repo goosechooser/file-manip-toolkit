@@ -66,6 +66,7 @@ class CustomFormat(FileFormatBase):
 
     def format_savepaths(self):
         """Handles where outputs are saved to. Returns a list of paths."""
+        print('savepaths:', self._savepaths)
         filenames, suffixes = self._filenames_and_suffixes()
         #if no custom output, save to cwd with default name
         if not self._savepaths:
