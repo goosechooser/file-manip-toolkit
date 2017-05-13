@@ -1,3 +1,5 @@
+import os
+import os.path
 import struct
 import pytest
 from file_manip_toolkit.unfman.CustomFormat import CustomFormat, interleave, deinterleave
@@ -7,7 +9,7 @@ from file_manip_toolkit.unfman.CustomFormat import CustomFormat, interleave, dei
 TESTDATA = bytearray.fromhex('0A 0B 0C 0D A0 B0 C0 D0')
 TESTDATA2 = bytearray.fromhex('FA FB FC FD AF BF CF DF')
 
-TESTFILE = 'tests\\test_data\\eswap\\vm3.15'
+TESTFILE = os.path.normpath('tests/test_data/eswap/vm3.15')
 
 @pytest.mark.parametrize('test_input, nsplit, expected', [
     (TESTDATA, 1, ('0A 0C A0 C0', '0B 0D B0 D0')),

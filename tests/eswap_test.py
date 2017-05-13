@@ -1,4 +1,5 @@
 import os
+import os.path
 import struct
 import pytest
 from file_manip_toolkit.eswap import eswap
@@ -6,7 +7,7 @@ from file_manip_toolkit.eswap import eswap
 TESTDATA = bytearray.fromhex("0A 0B 0C 0D")
 TESTDATA2 = bytearray.fromhex("0A 0B 0C 0D 0A 0B 0C 0D")
 TESTDATA3 = bytearray.fromhex("0A 0B 0C 0D 0A 0B 0C 0D 0A 0B 0C 0D 0A 0B 0C 0D")
-TESTFILE = 'tests\\test_data\\eswap\\vm3.15'
+TESTFILE = os.path.normpath('tests/test_data/eswap/vm3.15')
 
 @pytest.mark.parametrize("test_input, fmt, expected", [
     (TESTDATA, 'h', bytearray.fromhex("0B 0A 0D 0C")),
@@ -18,7 +19,7 @@ TESTFILE = 'tests\\test_data\\eswap\\vm3.15'
 ])
 def test_swap(test_input, fmt, expected):
     assert eswap.swap(test_input, fmt) == expected
-    
+
 @pytest.mark.parametrize("fmt", [
     ('Q'),
     ('e')
@@ -27,7 +28,6 @@ def test_swap_exception(fmt):
     with pytest.raises(struct.error):
         eswap.swap(TESTDATA, fmt)
 
-# format_filename(filename, savepath, suffix)
 def test_format_filename_default():
     result = eswap.format_filename('vm3.15', None, 'swapped')
     assert result == 'vm3.15.swapped'
