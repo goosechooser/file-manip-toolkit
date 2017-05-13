@@ -4,7 +4,7 @@ import pytest
 from file_manip_toolkit.unfman import cli
 
 
-custom_dir = 'tests\\testdir'
+custom_dir = 'tests\\test_data\\unfman'
 custom_ifiles = ['cps2_test.13', 'cps2_test.15', 'cps2_test.17', 'cps2_test.19']
 custom_interleave = [os.path.join(custom_dir, name) for name in custom_ifiles]
 custom_dfiles = ['cps2_test.13.15.17.19.combined']

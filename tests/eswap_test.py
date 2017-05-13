@@ -6,7 +6,7 @@ from file_manip_toolkit.eswap import eswap
 TESTDATA = bytearray.fromhex("0A 0B 0C 0D")
 TESTDATA2 = bytearray.fromhex("0A 0B 0C 0D 0A 0B 0C 0D")
 TESTDATA3 = bytearray.fromhex("0A 0B 0C 0D 0A 0B 0C 0D 0A 0B 0C 0D 0A 0B 0C 0D")
-TESTFILE = 'testdir\\vm3.15'
+TESTFILE = 'tests\\test_data\\eswap\\vm3.15'
 
 @pytest.mark.parametrize("test_input, fmt, expected", [
     (TESTDATA, 'h', bytearray.fromhex("0B 0A 0D 0C")),

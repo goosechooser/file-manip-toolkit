@@ -4,7 +4,7 @@ import filecmp
 import pytest
 from file_manip_toolkit.unfman import CPS2Format
 
-TESTDIR = 'tests\\testdir'
+TESTDIR = 'tests\\test_data\\unfman\\'
 DEINTERLEAVE_FILE = 'cps2_test.13.15.17.19.combined'
 INTERLEAVE_FILES = ['cps2_test.13', 'cps2_test.15', 'cps2_test.17', 'cps2_test.19']
 CUSTOM_FILES = ['custom.13', 'custom.15', 'custom.17', 'custom.19']
