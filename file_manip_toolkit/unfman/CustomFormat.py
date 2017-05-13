@@ -75,7 +75,9 @@ class CustomFormat(FileFormatBase):
         #if custom output is a folder, save default file name to that location
         elif os.path.isdir(self._savepaths):
             head = self._savepaths
+            print('head:', head)
             tails = ['.'.join([fname, s]) for fname, s in zip(filenames, suffixes)]
+            print('tails:', tails)
             spaths = [os.path.join(head, tail) for tail in tails]
 
         #if custom output is a file, append number to the end of it
