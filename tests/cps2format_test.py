@@ -7,7 +7,7 @@ from file_manip_toolkit.unfman import CPS2Format
 TESTDIR = 'tests\\test_data\\unfman'
 DEINTERLEAVE_FILE = 'cps2_test.13.15.17.19.combined'
 INTERLEAVE_FILES = ['cps2_test.13', 'cps2_test.15', 'cps2_test.17', 'cps2_test.19']
-CUSTOM_FILES = ['custom.13', 'custom.15', 'custom.17', 'custom.19']
+CUSTOM_FILES = ['custom1.13', 'custom1.15', 'custom1.17', 'custom1.19']
 
 # tests work for the most part
 # but some thought should be given to refactoring them
@@ -26,16 +26,23 @@ def outputs(request):
     return request.param
 
 @pytest.mark.parametrize('filepaths, outputs, expected', [
-    (INTERLEAVE_FILES, '', (1, [DEINTERLEAVE_FILE])),
-    (INTERLEAVE_FILES, 'testdir/', (1, [''.join(['testdir/', DEINTERLEAVE_FILE])])),
-    (INTERLEAVE_FILES, 'testdir/custom', (1, ['testdir/custom.combined'])),
     ([DEINTERLEAVE_FILE], '', (4, INTERLEAVE_FILES)),
-    ([DEINTERLEAVE_FILE], 'testdir/',
-     (4, [''.join(['testdir/', name]) for name in INTERLEAVE_FILES])),
-    ([DEINTERLEAVE_FILE], 'testdir/custom',
-     (4, [''.join(['testdir/', name]) for name in CUSTOM_FILES])),
+    ([DEINTERLEAVE_FILE], TESTDIR, (4, [''.join([TESTDIR, '\\', name]) for name in INTERLEAVE_FILES])),
+    ([DEINTERLEAVE_FILE], '\\'.join([TESTDIR, 'custom1']), (4, ['\\'.join([TESTDIR, name]) for name in CUSTOM_FILES])),
 ])
-def test_format_savepaths(filepaths, outputs, expected):
+def test_format_savepaths_deinterleave(filepaths, outputs, expected):
+    cps2 = CPS2Format.new(filepaths, outputs, False)
+    results = cps2.format_savepaths()
+    numfiles, filenames = expected
+    assert len(results) == numfiles
+    assert results == filenames
+
+@pytest.mark.parametrize('filepaths, outputs, expected', [
+    (INTERLEAVE_FILES, '', (1, [DEINTERLEAVE_FILE])),
+    (INTERLEAVE_FILES, TESTDIR, (1, ['\\'.join([TESTDIR, DEINTERLEAVE_FILE])])),
+    (INTERLEAVE_FILES, '\\'.join([TESTDIR, 'custom1']), (1, ['\\'.join([TESTDIR, 'custom1.combined'])])),
+])
+def test_format_savepaths_interleave(filepaths, outputs, expected):
     cps2 = CPS2Format.new(filepaths, outputs, False)
     results = cps2.format_savepaths()
     numfiles, filenames = expected
@@ -46,7 +53,7 @@ def test_format_savepaths(filepaths, outputs, expected):
 # DOESNT WORK WITH empty case?'' not sure how to test
 joined_deinterleave = ['\\'.join([TESTDIR, DEINTERLEAVE_FILE])]
 joined_interleave = ['\\'.join([TESTDIR, name]) for name in INTERLEAVE_FILES]
-# @pytest.mark.skip
+@pytest.mark.skip
 @pytest.mark.parametrize('test_data, expected', [
     (joined_deinterleave, 4),
     (joined_interleave, 1),
