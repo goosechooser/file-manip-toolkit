@@ -4,7 +4,7 @@ import filecmp
 import pytest
 from file_manip_toolkit.unfman import CPS2Format
 
-TESTDIR = 'tests\\test_data\\unfman'
+TESTDIR = os.path.normpath('tests/test_data/unfman/')
 DEINTERLEAVE_FILE = 'cps2_test.13.15.17.19.combined'
 INTERLEAVE_FILES = ['cps2_test.13', 'cps2_test.15', 'cps2_test.17', 'cps2_test.19']
 CUSTOM_FILES = ['custom1.13', 'custom1.15', 'custom1.17', 'custom1.19']
@@ -27,7 +27,7 @@ CUSTOM_FILES = ['custom1.13', 'custom1.15', 'custom1.17', 'custom1.19']
 
 @pytest.mark.parametrize('filepaths, outputs, expected', [
     ([DEINTERLEAVE_FILE], '', (4, INTERLEAVE_FILES)),
-    ([DEINTERLEAVE_FILE], os.path.join(TESTDIR, ''), (4, [os.path.join(TESTDIR, name) for name in INTERLEAVE_FILES])),
+    ([DEINTERLEAVE_FILE], TESTDIR, (4, [os.path.join(TESTDIR, name) for name in INTERLEAVE_FILES])),
     ([DEINTERLEAVE_FILE], os.path.join(TESTDIR, 'custom1'), (4, [os.path.join(TESTDIR, name) for name in CUSTOM_FILES])),
 ])
 def test_format_savepaths_deinterleave(filepaths, outputs, expected):
