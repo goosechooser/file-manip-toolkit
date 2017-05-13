@@ -1,3 +1,4 @@
+![Travis-CI status](https://travis-ci.org/goosechooser/file-manip-toolkit.svg?branch=master "Travis-CI status")
 ## what it is
 * a collection of possibly helpful scripts to make certain low level file manipulations easier
 

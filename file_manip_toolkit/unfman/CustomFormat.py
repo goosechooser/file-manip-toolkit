@@ -66,29 +66,22 @@ class CustomFormat(FileFormatBase):
 
     def format_savepaths(self):
         """Handles where outputs are saved to. Returns a list of paths."""
-        print('savepaths:', self._savepaths)
         filenames, suffixes = self._filenames_and_suffixes()
         #if no custom output, save to cwd with default name
         if not self._savepaths:
-            print("no custom output")
             fnames = [os.path.split(fname)[1] for fname in filenames]
             spaths = ['.'.join([fname, s]) for fname, s in zip(fnames, suffixes)]
 
         #if custom output is a folder, save default file name to that location
         elif os.path.isdir(self._savepaths):
-            print("folder custom output")
             head = self._savepaths
-            print('head:', head)
             tails = ['.'.join([fname, s]) for fname, s in zip(filenames, suffixes)]
-            print('tails:', tails)
             spaths = [os.path.join(head, tail) for tail in tails]
 
         #if custom output is a file, append number to the end of it
         else:
-            print("file custom output")
             spaths = ['.'.join([self._savepaths, s]) for s in suffixes]
 
-        print('spaths:', spaths)
         return spaths
 
     def save(self, savepaths, savedata):
