@@ -21,10 +21,11 @@ CUSTOM_FILES = ['custom1.13', 'custom1.15', 'custom1.17', 'custom1.19']
 # def nsplits(request):
 #     return request.param
 
-# @pytest.fixture(params=['testdir\\', 'custom'])
-# def outputs(request):
-#     return request.param
+@pytest.fixture(params=['testdir\\', 'custom'])
+def outputs(request):
+    return request.param
 
+# Should split checking the number of files returned to its own unit test
 @pytest.mark.parametrize('filepaths, outputs, expected', [
     ([DEINTERLEAVE_FILE], '', (4, INTERLEAVE_FILES)),
     ([DEINTERLEAVE_FILE], TESTDIR, (4, [os.path.join(TESTDIR, name) for name in INTERLEAVE_FILES])),
@@ -51,9 +52,9 @@ def test_format_savepaths_interleave(filepaths, outputs, expected):
 
 # deinterleave runs slower during testing - find out why?
 # DOESNT WORK WITH empty case?'' not sure how to test
-joined_deinterleave = ['\\'.join([TESTDIR, DEINTERLEAVE_FILE])]
-joined_interleave = ['\\'.join([TESTDIR, name]) for name in INTERLEAVE_FILES]
-@pytest.mark.skip
+joined_deinterleave = [os.path.join(TESTDIR, DEINTERLEAVE_FILE)]
+joined_interleave = [os.path.join(TESTDIR, name) for name in INTERLEAVE_FILES]
+# @pytest.mark.skip
 @pytest.mark.parametrize('test_data, expected', [
     (joined_deinterleave, 4),
     (joined_interleave, 1),
