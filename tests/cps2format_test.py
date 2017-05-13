@@ -4,7 +4,7 @@ import filecmp
 import pytest
 from file_manip_toolkit.unfman import CPS2Format
 
-TESTDIR = 'tests\\test_data\\unfman\\'
+TESTDIR = 'tests\\test_data\\unfman'
 DEINTERLEAVE_FILE = 'cps2_test.13.15.17.19.combined'
 INTERLEAVE_FILES = ['cps2_test.13', 'cps2_test.15', 'cps2_test.17', 'cps2_test.19']
 CUSTOM_FILES = ['custom.13', 'custom.15', 'custom.17', 'custom.19']
@@ -44,8 +44,8 @@ def test_format_savepaths(filepaths, outputs, expected):
 
 # deinterleave runs slower during testing - find out why?
 # DOESNT WORK WITH empty case?'' not sure how to test
-joined_deinterleave = [''.join(['tests/testdir/', DEINTERLEAVE_FILE])]
-joined_interleave = [''.join(['tests/testdir/', name]) for name in INTERLEAVE_FILES]
+joined_deinterleave = ['\\'.join([TESTDIR, DEINTERLEAVE_FILE])]
+joined_interleave = ['\\'.join([TESTDIR, name]) for name in INTERLEAVE_FILES]
 # @pytest.mark.skip
 @pytest.mark.parametrize('test_data, expected', [
     (joined_deinterleave, 4),
