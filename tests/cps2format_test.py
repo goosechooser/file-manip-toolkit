@@ -4,7 +4,7 @@ import filecmp
 import pytest
 from file_manip_toolkit.unfman import CPS2Format
 
-TESTDIR = 'tests\\test_data\\unfman\\'
+TESTDIR = 'tests\\test_data\\unfman'
 DEINTERLEAVE_FILE = 'cps2_test.13.15.17.19.combined'
 INTERLEAVE_FILES = ['cps2_test.13', 'cps2_test.15', 'cps2_test.17', 'cps2_test.19']
 CUSTOM_FILES = ['custom1.13', 'custom1.15', 'custom1.17', 'custom1.19']
@@ -13,22 +13,22 @@ CUSTOM_FILES = ['custom1.13', 'custom1.15', 'custom1.17', 'custom1.19']
 # but some thought should be given to refactoring them
 # maybe
 
-@pytest.fixture(params=[2, 4])
-def numbytes(request):
-    return request.param
+# @pytest.fixture(params=[2, 4])
+# def numbytes(request):
+#     return request.param
 
-@pytest.fixture(params=[2, 4])
-def nsplits(request):
-    return request.param
+# @pytest.fixture(params=[2, 4])
+# def nsplits(request):
+#     return request.param
 
-@pytest.fixture(params=['testdir\\', 'custom'])
-def outputs(request):
-    return request.param
+# @pytest.fixture(params=['testdir\\', 'custom'])
+# def outputs(request):
+#     return request.param
 
 @pytest.mark.parametrize('filepaths, outputs, expected', [
     ([DEINTERLEAVE_FILE], '', (4, INTERLEAVE_FILES)),
-    ([DEINTERLEAVE_FILE], TESTDIR, (4, [''.join([TESTDIR, name]) for name in INTERLEAVE_FILES])),
-    ([DEINTERLEAVE_FILE], os.path.join(TESTDIR, 'custom1'), (4, [''.join([TESTDIR, name]) for name in CUSTOM_FILES])),
+    ([DEINTERLEAVE_FILE], TESTDIR, (4, [os.path.join(TESTDIR, name) for name in INTERLEAVE_FILES])),
+    ([DEINTERLEAVE_FILE], os.path.join(TESTDIR, 'custom1'), (4, [os.path.join(TESTDIR, name) for name in CUSTOM_FILES])),
 ])
 def test_format_savepaths_deinterleave(filepaths, outputs, expected):
     cps2 = CPS2Format.new(filepaths, outputs, False)
@@ -39,8 +39,8 @@ def test_format_savepaths_deinterleave(filepaths, outputs, expected):
 
 @pytest.mark.parametrize('filepaths, outputs, expected', [
     (INTERLEAVE_FILES, '', (1, [DEINTERLEAVE_FILE])),
-    (INTERLEAVE_FILES, TESTDIR, (1, [''.join([TESTDIR, DEINTERLEAVE_FILE])])),
-    (INTERLEAVE_FILES, os.path.join(TESTDIR, 'custom1'), (1, [''.join([TESTDIR, 'custom1.combined'])])),
+    (INTERLEAVE_FILES, TESTDIR, (1, [os.path.join(TESTDIR, DEINTERLEAVE_FILE)])),
+    (INTERLEAVE_FILES, os.path.join(TESTDIR, 'custom1'), (1, [os.path.join(TESTDIR, 'custom1.combined')])),
 ])
 def test_format_savepaths_interleave(filepaths, outputs, expected):
     cps2 = CPS2Format.new(filepaths, outputs, False)
